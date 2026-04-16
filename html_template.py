@@ -229,10 +229,11 @@ def generate_html(report_data, date):
     body {{
         font-family: Arial, sans-serif;
         background:
-        linear-gradient(rgba(10,10,20,0.68), rgba(10,10,20,0.9)),
+        linear-gradient(rgba(10,10,20,0.45), rgba(10,10,20,0.7)),
         url("Ready-for-migrating-to-an-electric-vehicle-fleet.jpg");
         background-size: cover;
-        color: #e2e8f0;
+        background-position: center;
+        background-attachment: fixed;  
     }}
 
     .app-shell {{
@@ -246,9 +247,11 @@ def generate_html(report_data, date):
         flex: 0 0 auto;
         text-align: center;
         padding: 14px 16px 8px;
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: 0.04em;
+        font-size: 30px;
+        font-weight: 900;
+        color: #ffffff;   /* 🔥 pure white */
+        letter-spacing: 0.06em;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.6);
     }}
 
     .filter {{
@@ -308,19 +311,21 @@ def generate_html(report_data, date):
         flex-direction: column;
         height: 100%;
         min-height: 0;
-        background: rgba(15,23,42,0.38);
-        border: 1px solid rgba(148,163,184,0.14);
+        background: rgba(15,23,42,0.18);
+        border: 1px solid rgba(148,163,184,0.12);
         border-radius: 8px;
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(14px);
         padding: 10px;
     }}
 
     .section-title {{
+        color: #ffffff;
+        font-weight: 900;
+        letter-spacing: 0.08em; 
         flex: 0 0 auto;
         margin: 0 0 8px;
         padding-bottom: 7px;
         border-bottom: 1px solid rgba(148,163,184,0.2);
-        color: #dbeafe;
         font-size: 13px;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -342,7 +347,7 @@ def generate_html(report_data, date):
         align-items: center;
         gap: 8px;
         min-height: 0;
-        background: rgba(30,41,59,0.66);
+        background: rgba(30,41,59,0.35);
         border: 1px solid rgba(148,163,184,0.18);
         border-radius: 8px;
         padding: 8px 10px;
@@ -352,7 +357,7 @@ def generate_html(report_data, date):
 
     .kpi-card .label {{
         min-width: 0;
-        color: #94a3b8;
+        color: #e2e8f0;
         font-size: 10px;
         font-weight: 800;
         letter-spacing: 0.04em;
@@ -370,6 +375,32 @@ def generate_html(report_data, date):
         white-space: nowrap;
     }}
 
+
+    /* KPI VALUE COLORS */
+    .kpi-card.earnings .value {{
+        color: #4ade80;   /* green */
+    }}
+
+    .kpi-card.avg .value {{
+        color: #38bdf8;   /* cyan */
+    }}
+
+    .kpi-card.completion .value {{
+        color: #60a5fa;   /* blue */
+    }}
+
+    .kpi-card.orders .value {{
+        color: #fbbf24;   /* yellow */
+    }}
+
+    .kpi-card.drivers .value {{
+        color: #a78bfa;   /* purple */
+    }}
+
+    .kpi-card.missed .value {{
+        color: #f87171;   /* red */
+    }}
+
     .change {{
         color: #94a3b8;
         font-size: 14px;
@@ -381,10 +412,12 @@ def generate_html(report_data, date):
 
     .change.positive {{
         color: #4ade80;
+        text-shadow: 0 0 8px rgba(74,222,128,0.6);
     }}
 
     .change.negative {{
         color: #f87171;
+        text-shadow: 0 0 8px rgba(248,113,113,0.6);
     }}
 
     .change.neutral {{
@@ -413,7 +446,7 @@ def generate_html(report_data, date):
 
     .insight-card {{
         min-height: 100%;
-        background: rgba(30,41,59,0.7);
+        background: rgba(30,41,59,0.32);
         border: 1px solid rgba(148,163,184,0.16);
         border-radius: 8px;
         padding: 16px;
@@ -442,9 +475,9 @@ def generate_html(report_data, date):
     }}
 
     .insight-label {{
-        color: #cbd5e1;
+        color: #ffffff;
+        font-weight: 700;
         font-size: 12px;
-        font-weight: 800;
         letter-spacing: 0.04em;
         margin-bottom: 5px;
     }}
@@ -452,11 +485,14 @@ def generate_html(report_data, date):
     .insight-block p {{
         margin: 0;
         font-size: 14px;
+        color: #e2e8f0; 
+        font-weight: 400;   
     }}
 
     .change-story p {{
         margin: 0 0 6px;
         font-size: 14px;
+        color: #f1f5f9;
     }}
 
     .change-story p:last-child {{
@@ -465,7 +501,7 @@ def generate_html(report_data, date):
 
     .trend-line {{
         margin-top: 7px !important;
-        color: #94a3b8;
+        color: #cbd5f5 !important;
         font-size: 13px !important;
     }}
 
@@ -480,7 +516,7 @@ def generate_html(report_data, date):
         flex: 1 1 auto;
         min-height: 0;
         height: 100%;
-        background: rgba(30,41,59,0.56);
+        background: rgba(30,41,59,0.28);
         border: 1px solid rgba(148,163,184,0.16);
         border-radius: 8px;
         padding: 10px;
