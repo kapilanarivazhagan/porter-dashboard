@@ -162,6 +162,9 @@ def get_last_7_days_earnings(df, target_date):
     trend_df["Order Date"] = pd.to_datetime(trend_df["Order Date"], errors="coerce").dt.normalize()
     trend_df = trend_df.dropna(subset=["Order Date"])
 
+    # Remove Sundays (dayofweek 6)
+    trend_df = trend_df[trend_df["Order Date"].dt.dayofweek != 6]
+
     if trend_df.empty:
         return pd.DataFrame(columns=["Order Date", "City", "Earnings"])
 
@@ -181,6 +184,34 @@ def get_last_7_days_earnings(df, target_date):
     trend = trend[trend["Earnings"] > 0]
 
     return trend
+
+
+def get_city_driver_earnings(df, target_date):
+
+    df_copy = df.copy()
+    target_date = pd.to_datetime(target_date).normalize()
+    df_copy["Order Date"] = pd.to_datetime(df_copy["Order Date"], errors="coerce").dt.normalize()
+
+    today_df = df_copy[df_copy["Order Date"] == target_date]
+
+    # Try "Driver ID", fallback to "Driver Name" if missing
+    driver_col = "Driver ID" if "Driver ID" in today_df.columns else "Driver Name"
+    if driver_col not in today_df.columns:
+        today_df[driver_col] = 0
+
+    result = (
+        today_df
+        .groupby("City")
+        .agg({
+            "Earnings": "sum",
+            driver_col: "nunique"
+        })
+        .reset_index()
+    )
+
+    result.rename(columns={driver_col: "Drivers Reported"}, inplace=True)
+
+    return result
 
 
 def add_trend_context(city_data, earnings_trend):
@@ -240,10 +271,12 @@ def prepare_charts(df, target_date=None):
         target_date = chart_df["Order Date"].max()
 
     city_earnings_trend = get_last_7_days_earnings(chart_df, target_date)
+    driver_earnings_chart = get_city_driver_earnings(chart_df, target_date)
 
     return {
         "city_earnings": city_earnings,
-        "city_earnings_trend": city_earnings_trend
+        "city_earnings_trend": city_earnings_trend,
+        "driver_earnings_chart": driver_earnings_chart
     }
 
 

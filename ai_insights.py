@@ -39,32 +39,90 @@ def _movement(value, up_word, down_word):
     return up_word if value >= 0 else down_word
 
 
-def _issue_from_changes(completion_change, missed_change, drivers_change):
-    if completion_change < -2:
-        return "Low completion is driving earnings drop"
+def _issue_from_changes(completion_change, missed_change, drivers_change, earnings_change, orders_change_abs):
+    # Priority 1: Completion drop + high missed → conversion loss
+    if completion_change < -1 and missed_change > 5:
+        return "Low completion is limiting order conversion"
 
+    # Priority 2: Drivers up but earnings not growing proportionally
+    if drivers_change > 5 and earnings_change < (drivers_change * 0.5):
+        return "Driver supply increased but utilization is weak"
+
+    # Priority 3: Both earnings and orders growing → demand growth
+    if earnings_change > 3 and orders_change_abs > 0:
+        return "Strong demand growth is driving revenue increase"
+
+    # Priority 4: Isolated completion drop
+    if completion_change < -2:
+        return "Low completion is limiting order conversion"
+
+    # Priority 5: High missed alone
     if missed_change > 10:
         return "High missed notifications are impacting conversions"
 
-    if drivers_change < 0:
+    # Priority 6: Low driver supply
+    if drivers_change < -5:
         return "Low driver supply is limiting growth"
 
-    return "Balanced performance but optimization needed"
+    return "Balanced performance but optimization opportunities exist"
 
 
-def _action_from_issue(issue, earnings_delta, earnings):
+def _action_from_issue(issue, earnings_delta, earnings, missed, avg_orders, drivers):
     recovery = max(abs(earnings_delta) * 0.65, earnings * 0.04, 10000)
+    unlock = _highlight(_format_inr(recovery))
 
-    if "missed notifications" in issue:
-        action = "Reduce missed notifications and improve alerting"
-    elif "completion" in issue:
-        action = "Improve driver acceptance and reduce cancellations"
-    elif "driver supply" in issue:
-        action = "Increase driver login hours and active supply"
+    if "missed" in issue:
+        missed_10pct = max(int(missed * 0.10), 1)
+        missed_earn = _highlight(_format_inr(earnings * 0.08))
+        return (
+            f"Reducing missed orders by 10% (~{missed_10pct} orders) can unlock "
+            f"~{missed_earn} additional earnings. Focus on notification reliability "
+            f"and driver response time improvements."
+        )
+
+    if "completion" in issue:
+        return (
+            f"Improve driver acceptance and reduce missed notifications to "
+            f"increase completion by ~2–3%. This can recover ~{unlock} in earnings."
+        )
+
+    if "utilization" in issue:
+        if drivers and avg_orders:
+            target_orders = int(avg_orders * 1.15)
+            return (
+                f"Improve driver utilization by increasing orders per driver from "
+            f"{int(avg_orders)} to {target_orders}. Better allocation can unlock ~{unlock}."
+            )
+        return f"Improve driver utilization by increasing orders per driver to unlock ~{unlock}."
+
+    if "demand growth" in issue:
+        return (
+            f"Capitalize on demand momentum by ensuring supply availability "
+            f"during peak hours. Protect high-demand routes to sustain current growth."
+        )
+
+    return f"Tune supply allocation and protect high-performing routes to unlock ~{unlock} in earnings."
+
+
+def _performance_summary(city, earnings_change, completion_change, orders_change_abs, drivers_change):
+    city_name = _city_title(city) if city != "all" else "The fleet overall"
+
+    parts = []
+    if earnings_change > 3 and orders_change_abs > 0:
+        parts.append("strong demand growth")
+    elif earnings_change < -3:
+        parts.append("declining revenue")
     else:
-        action = "Tune supply allocation and protect high-performing routes"
+        parts.append("stable revenue")
 
-    return f"{action} to recover ~{_highlight(_format_inr(recovery))} in earnings."
+    if completion_change < -1:
+        parts.append("requires efficiency improvements to maximize output")
+    elif drivers_change > 5 and earnings_change < drivers_change * 0.5:
+        parts.append("needs better driver utilization to match supply with revenue")
+    else:
+        parts.append("is showing consistent fulfillment")
+
+    return f"Overall, {city_name} is showing {parts[0]} but {parts[1]}."
 
 
 def _city_title(city):
@@ -91,46 +149,59 @@ def _build_insight(row, city_count=1):
     orders_change_abs = int(_safe_number(row, "orders_change_abs"))
     missed_change = float(_safe_number(row, "missed_change"))
     drivers_change = float(_safe_number(row, "drivers_change"))
+    missed = float(_safe_number(row, "missed_notifs_overall", 0))
+    avg_orders = float(_safe_number(row, "avg_orders", 0))
+    drivers = float(_safe_number(row, "Drivers Reported", 0))
     trend_direction = str(row.get("trend_direction", "upward"))
 
     earnings_delta = _absolute_delta(earnings, earnings_change)
-    issue = _issue_from_changes(completion_change, missed_change, drivers_change)
+    issue = _issue_from_changes(
+        completion_change, missed_change, drivers_change,
+        earnings_change, orders_change_abs
+    )
 
-    if city == "all":
-        issue = f"{issue} across {city_count} cities"
+    city_suffix = f" across {city_count} cities" if city == "all" else ""
+    issue_display = f"{issue}{city_suffix}"
 
     earnings_direction = _movement(earnings_delta, "increased", "declined")
     completion_direction = _movement(completion_change, "increased", "decreased")
     orders_direction = _movement(orders_change_abs, "increased", "dropped")
 
+    # Causal storytelling — each line shows what happened AND why it matters
+    earnings_cause = "primarily driven by a rise in completed orders" if orders_change_abs > 0 else "despite order activity"
+    completion_implication = "indicating minor inefficiencies in fulfillment" if completion_change < 0 else "reflecting improved driver efficiency"
+    orders_impact = "directly contributing to higher earnings" if earnings_delta > 0 else "putting pressure on revenue"
+
     what_changed = {
         "earnings": (
-            f"Earnings {_arrow(earnings_delta)} have {earnings_direction} by "
-            f"{_highlight(_format_inr(earnings_delta))}, indicating a shift in overall revenue momentum."
+            f"Earnings {_arrow(earnings_delta)} {earnings_direction} by "
+            f"{_highlight(_format_inr(earnings_delta))}, {earnings_cause}."
         ),
         "completion": (
-            f"Completion rate {_arrow(completion_change)} {completion_direction} by "
-            f"{_highlight(f'{abs(completion_change):.1f}%')}, changing efficiency in order fulfillment."
+            f"Completion {_arrow(completion_change)} {completion_direction} "
+            f"by {_highlight(f'{abs(completion_change):.1f}%')}, {completion_implication}."
         ),
         "orders": (
-            f"Total orders {_arrow(orders_change_abs)} {orders_direction} by "
-            f"{_highlight(f'{abs(orders_change_abs):,} orders')}, directly impacting earnings."
+            f"Orders {_arrow(orders_change_abs)} {orders_direction} by "
+            f"{_highlight(f'{abs(orders_change_abs):,}')}, {orders_impact}."
         ),
     }
-    action_plan = _action_from_issue(issue, earnings_delta, earnings)
+
+    action_plan = _action_from_issue(issue, earnings_delta, earnings, missed, avg_orders, drivers)
     trend_line = _trend_line(city, trend_direction)
+    perf_summary = _performance_summary(city, earnings_change, completion_change, orders_change_abs, drivers_change)
 
     return {
         "city": city,
         "city_label": _city_title(city),
-        "key_issue": issue,
+        "key_issue": issue_display,
         "what_changed": what_changed,
         "action_plan": action_plan,
         "trend_line": trend_line,
-        "what": issue,
+        "performance_summary": perf_summary,
+        "what": issue_display,
         "why": trend_line,
         "action": action_plan,
-        "performance_summary": issue,
         "actionable_recommendation": action_plan,
     }
 

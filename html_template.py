@@ -150,9 +150,13 @@ def generate_html(report_data, date):
         }
 
     city_kpi_json = json.dumps(city_kpi, ensure_ascii=False)
+    driver_earnings_raw = charts.get("driver_earnings_chart")
+    driver_earnings_records = _json_records(driver_earnings_raw) if driver_earnings_raw is not None else []
+
     chart_json = json.dumps(
         {
             "cityEarningsTrend": _chart_payload(charts.get("city_earnings_trend")),
+            "city_driver_earnings": driver_earnings_records,
         },
         ensure_ascii=False,
     )
@@ -168,6 +172,7 @@ def generate_html(report_data, date):
         key_issue = _insight_text(ins.get("key_issue", ins.get("what", "")))
         action_plan = _insight_text(ins.get("action_plan", ins.get("action", "")))
         trend_line = _insight_text(ins.get("trend_line", ins.get("why", "")))
+        perf_summary = _insight_text(ins.get("performance_summary", ""))
         earnings_change = _insight_text(what_changed.get("earnings", "Earnings 0.0%"))
         completion_change = _insight_text(what_changed.get("completion", "Completion 0.0%"))
         orders_change = _insight_text(what_changed.get("orders", "Orders 0.0%"))
@@ -195,6 +200,8 @@ def generate_html(report_data, date):
                 <div class="insight-label">&#128640; Action Plan:</div>
                 <p>{action_plan}</p>
             </div>
+
+            {f'<div class="insight-block perf-summary"><p>{perf_summary}</p></div>' if perf_summary else ''}
         </article>
         """
 
@@ -525,8 +532,45 @@ def generate_html(report_data, date):
     .chart-container {{
         flex: 1 1 auto;
         min-height: 0;
+        display: flex;
+        gap: 10px;
         width: 100%;
         height: 100%;
+    }}
+
+    .chart-half {{
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }}
+
+    .chart-half-title {{
+        flex: 0 0 auto;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }}
+
+    .chart-half canvas {{
+        flex: 1 1 auto;
+        min-height: 0;
+    }}
+
+    .perf-summary {{
+        border-top: 1px solid rgba(148,163,184,0.12);
+        padding-top: 8px;
+        margin-top: 4px;
+    }}
+
+    .perf-summary p {{
+        font-size: 12px !important;
+        color: #94a3b8 !important;
+        font-style: italic;
     }}
 
     .chart-title {{
@@ -572,6 +616,11 @@ def generate_html(report_data, date):
     }}
 
     @media (max-width: 920px) {{
+        .app-shell {{
+            height: auto;
+            min-height: 100vh;
+        }}
+
         .header {{
             padding-top: 10px;
             font-size: 21px;
@@ -583,6 +632,7 @@ def generate_html(report_data, date):
 
         .dashboard-viewport {{
             padding: 0;
+            overflow-y: visible;
         }}
 
         .dashboard-track {{
@@ -593,10 +643,6 @@ def generate_html(report_data, date):
             transition: transform 280ms ease;
         }}
 
-        .dashboard-viewport {{
-            overflow-y: auto; 
-        }}
-
         .page,
         .kpi-page,
         .insights-page, 
@@ -605,8 +651,18 @@ def generate_html(report_data, date):
             grid-row: auto;
             flex: 0 0 100vw;
             width: 100vw;
-            height: 100%;
+            height: auto;
             padding: 0 10px;
+        }}
+
+        .chart-container {{
+            flex-direction: column;
+            gap: 20px;
+        }}
+
+        .chart-half {{
+            height: 300px;
+            flex: none;
         }}
 
         .kpi-card {{
@@ -644,18 +700,14 @@ def generate_html(report_data, date):
         }}
 
         .footer {{
-            position: sticky;
-            bottom: 0;
-            background: rgba(15,23,42,0.9);
-        }}  
-
-        .footer {{
             display: block;
             font-size: 10px;
             padding: 6px;
             text-align: center;
             color: #94a3b8;
             border-top: 1px solid rgba(148,163,184,0.18);
+            background: rgba(15,23,42,0.9);
+            position: static;
         }}
     }}
 
@@ -966,11 +1018,129 @@ def generate_html(report_data, date):
         new Chart(canvas, chartConfig);
     }}
 
+    function drawDriverChart() {{
+        const canvas = document.getElementById("driverChart");
+        if (!canvas) return;
+
+        const rows = chartData.city_driver_earnings || [];
+        if (!rows.length) {{
+            const empty = document.createElement("div");
+            empty.className = "empty-chart";
+            empty.textContent = "Driver earnings data unavailable";
+            canvas.replaceWith(empty);
+            return;
+        }}
+
+        const cities = rows.map((r) => r.City);
+        const earnings = rows.map((r) => r.Earnings || 0);
+        const drivers = rows.map((r) => r["Drivers Reported"] || 0);
+
+        new Chart(canvas, {{
+            type: "bar",
+            data: {{
+                labels: cities,
+                datasets: [
+                    {{
+                        label: "Earnings",
+                        data: earnings,
+                        backgroundColor: "rgba(74,222,128,0.7)",
+                        borderColor: "#4ade80",
+                        borderWidth: 1,
+                        yAxisID: "yEarnings"
+                    }},
+                    {{
+                        label: "Drivers Reported",
+                        data: drivers,
+                        backgroundColor: "rgba(167,139,250,0.7)",
+                        borderColor: "#a78bfa",
+                        borderWidth: 1,
+                        yAxisID: "yDrivers"
+                    }}
+                ]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{
+                        labels: {{
+                            color: "#e2e8f0",
+                            boxWidth: 12,
+                            font: {{ size: 10 }}
+                        }}
+                    }},
+                    tooltip: {{
+                        displayColors: false,
+                        callbacks: {{
+                            title: function() {{ return null; }},
+                            label: function(ctx) {{
+                                const index = ctx.dataIndex;
+                                const city = ctx.chart.data.labels[index];
+                                const earnings = ctx.chart.data.datasets[0].data[index];
+                                const drivers = ctx.chart.data.datasets[1].data[index];
+                                
+                                let formattedEarnings = "";
+                                if (earnings >= 100000) {{
+                                    formattedEarnings = (earnings / 100000).toFixed(1) + "L";
+                                }} else {{
+                                    formattedEarnings = (earnings / 1000).toFixed(1) + "K";
+                                }}
+
+                                const cityCap = city.charAt(0).toUpperCase() + city.slice(1);
+
+                                return [
+                                    "City: " + cityCap,
+                                    "Drivers: " + drivers.toLocaleString('en-IN'),
+                                    "Earnings: \u20b9" + formattedEarnings
+                                ];
+                            }}
+                        }}
+                    }},
+                    datalabels: {{
+                        display: true,
+                        align: "end",
+                        anchor: "end",
+                        color: "#e2e8f0",
+                        font: {{ size: 10, weight: "bold" }},
+                        formatter: function(value, ctx) {{
+                            if (ctx.dataset.label === "Earnings") {{
+                                if (value >= 100000) return (value / 100000).toFixed(1) + "L";
+                                return (value / 1000).toFixed(1) + "K";
+                            }}
+                            return value.toLocaleString('en-IN');
+                        }}
+                    }}
+                }},
+                scales: {{
+                    x: {{
+                        ticks: {{ color: "#94a3b8", font: {{ size: 10 }} }},
+                        grid: {{ color: "rgba(148,163,184,0.1)" }}
+                    }},
+                    yEarnings: {{
+                        type: "linear",
+                        position: "left",
+                        display: false,
+                        beginAtZero: true
+                    }},
+                    yDrivers: {{
+                        type: "linear",
+                        position: "right",
+                        display: false,
+                        beginAtZero: true,
+                        grid: {{ drawOnChartArea: false }}
+                    }}
+                }}
+            }},
+            plugins: [ChartDataLabels]
+        }});
+    }}
+
     document.addEventListener("DOMContentLoaded", () => {{
         filterCity();
         initSwipe();
         setPage(0);
         drawCityEarningsChart();
+        drawDriverChart();
     }});
 
     </script>
@@ -1055,12 +1225,17 @@ def generate_html(report_data, date):
 
                 <section class="page chart-page">
                     <div class="section-panel">
-                        <h3 class="section-title">Chart</h3>
+                        <h3 class="section-title">Charts</h3>
                         <div class="chart-card">
-                            <div class="chart-title">City vs Earnings (Last 7 Days)</div>
-                            <div class="chart-subtitle">Last 7 days earnings trend across cities</div>
                             <div class="chart-container">
-                                <canvas id="cityEarningsChart" aria-label="City vs Earnings last 7 days line chart"></canvas>
+                                <div class="chart-half">
+                                    <div class="chart-half-title">&#128200; City Earnings — Last 7 Days</div>
+                                    <canvas id="cityEarningsChart" aria-label="City vs Earnings last 7 days line chart"></canvas>
+                                </div>
+                                <div class="chart-half">
+                                    <div class="chart-half-title">&#128101; Drivers vs Earnings by City</div>
+                                    <canvas id="driverChart" aria-label="Drivers reported vs earnings per city bar chart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>

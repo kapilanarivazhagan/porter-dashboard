@@ -115,25 +115,57 @@ def load_by_date(target_date):
 
 
 # ===============================
-# LOAD MULTIPLE DATES (MANUAL MODE)
+# LOAD MULTIPLE DATES (BATCH — 1 API call per unique sheet)
 # ===============================
 
 def load_multiple_dates(date_list):
 
+    # Group dates by their sheet name to avoid redundant API calls
+    from collections import defaultdict
+    sheet_to_dates = defaultdict(list)
+    for d in date_list:
+        target = pd.to_datetime(d)
+        sheet_name = target.strftime("%b %y")
+        sheet_to_dates[sheet_name].append(target)
+
+    sheet = client.open_by_url(SHEET_URL)  # Open spreadsheet only once
     all_data = []
 
-    for d in date_list:
+    for sheet_name, dates in sheet_to_dates.items():
         try:
-            df = load_by_date(d)
-            all_data.append(df)
+            ws = sheet.worksheet(sheet_name)
+            data = ws.get_all_records()
+
+            if not data:
+                print(f"⚠️ No data in sheet: {sheet_name}")
+                continue
+
+            df = pd.DataFrame(data)
+
+            if "Order Date" not in df.columns:
+                print(f"⚠️ 'Order Date' column missing in {sheet_name}")
+                continue
+
+            df["Order Date"] = pd.to_datetime(df["Order Date"], errors="coerce")
+
+            # Filter to only the requested dates from this sheet
+            date_set = pd.DatetimeIndex(dates).normalize()
+            df_filtered = df[df["Order Date"].dt.normalize().isin(date_set)]
+
+            if df_filtered.empty:
+                print(f"⚠️ No matching rows in {sheet_name} for requested dates")
+                continue
+
+            all_data.append(df_filtered)
+            print(f"✅ {sheet_name}: {len(df_filtered)} rows ({len(dates)} date(s))")
+
         except Exception as e:
-            print(f"⚠️ Failed for {d}: {e}")
+            print(f"⚠️ Failed for sheet '{sheet_name}': {e}")
 
     if not all_data:
         raise ValueError("❌ No data loaded for given dates")
 
     final_df = pd.concat(all_data, ignore_index=True)
-
-    print(f"✅ Loaded multiple dates → {len(final_df)} rows")
+    print(f"✅ Loaded multiple dates → {len(final_df)} rows total")
 
     return final_df
