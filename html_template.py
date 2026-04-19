@@ -725,6 +725,40 @@ def generate_html(report_data, date):
         data: {{
             labels: chartData.cityEarningsTrend.labels,
             datasets: chartData.cityEarningsTrend.datasets.map((dataset, index) => {{
+                if (dataset.label === "All Cities") {{
+                    return {{
+                        label: "All Cities",
+                        data: dataset.data,
+                        borderColor: "#ffffff",
+                        borderWidth: 3,
+                        borderDash: [6, 4],
+                        pointRadius: function(ctx) {{
+                            const value = ctx.raw;
+                            const data = ctx.dataset.data.filter(v => v !== null);
+
+                            const max = Math.max(...data);
+                            const min = Math.min(...data);
+
+                            if (value === max || value === min) {{
+                                return 6;
+                            }}
+                            return 0;
+                        }},
+                        pointBackgroundColor: function(ctx) {{
+                            const value = ctx.raw;
+                            const data = ctx.dataset.data.filter(v => v !== null);
+
+                            const max = Math.max(...data);
+                            const min = Math.min(...data);
+
+                            if (value === max) return "#4ade80";
+                            if (value === min) return "#f87171";
+
+                            return "#ffffff";
+                        }}
+                    }};
+                }}
+
                 const color = chartColors[index % chartColors.length];
 
                 return {{

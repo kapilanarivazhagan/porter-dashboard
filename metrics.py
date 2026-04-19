@@ -183,6 +183,16 @@ def get_last_7_days_earnings(df, target_date):
 
     trend = trend[trend["Earnings"] > 0]
 
+    total_trend = (
+        trend
+        .groupby("Order Date")["Earnings"]
+        .sum()
+        .reset_index()
+    )
+    total_trend["City"] = "All Cities"
+
+    trend = pd.concat([trend, total_trend], ignore_index=True)
+
     return trend
 
 
