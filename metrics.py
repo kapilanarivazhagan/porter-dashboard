@@ -299,6 +299,8 @@ def build_metrics(df, target_date, city=None):
     target_date = pd.to_datetime(target_date)
     yday = target_date - pd.Timedelta(days=1)
 
+    if yday.weekday() == 6:
+        yday = target_date - pd.Timedelta(days=2)
     # -----------------------------
     # TODAY DATA
     # -----------------------------

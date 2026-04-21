@@ -1,13 +1,13 @@
 import streamlit as st
 import subprocess
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import streamlit.components.v1 as components
 
 # -----------------------------
 # CONFIG
 # -----------------------------
-S3_BUCKET = "porter-dashboard-kavi"
+S3_BUCKET = "revenue-report-kavi"
 BASE_S3_URL = f"https://{S3_BUCKET}.s3.amazonaws.com"
 
 REPORT_FILE = "porter_report.html"
@@ -28,9 +28,31 @@ st.markdown(
 st.markdown("---")
 
 # -----------------------------
+# DATE SELECTION
+# -----------------------------
+mode = st.radio("Select Mode", ["Auto", "Manual"])
+
+selected_date = None
+
+if mode == "Manual":
+    selected_date = st.date_input("Select Date")
+
+# -----------------------------
 # BUTTON
 # -----------------------------
 generate = st.button("Generate Report")
+
+# -----------------------------
+# AUTO DATE LOGIC (MATCHES main.py)
+# -----------------------------
+def get_auto_date():
+    today = datetime.today()
+    d_minus_1 = today - timedelta(days=1)
+
+    if d_minus_1.weekday() == 6:  # Sunday
+        d_minus_1 = today - timedelta(days=2)
+
+    return d_minus_1
 
 # -----------------------------
 # MAIN FLOW
@@ -41,7 +63,16 @@ if generate:
     # RUN SCRIPT
     # -----------------------------
     with st.spinner("Generating report..."):
-        result = subprocess.run("python main.py", shell=True)
+
+        if mode == "Manual" and selected_date:
+            date_str = selected_date.strftime("%Y-%m-%d")
+            cmd = f'python main.py --date {date_str}'
+            report_date = selected_date
+        else:
+            cmd = "python main.py"
+            report_date = get_auto_date()
+
+        result = subprocess.run(cmd, shell=True)
 
         if result.returncode != 0:
             st.error("Error running main.py")
@@ -80,22 +111,11 @@ if generate:
     st.success("Uploaded successfully")
 
     # -----------------------------
-    # PREVIEW
+    # CAPTION (UPDATED)
     # -----------------------------
-    st.markdown("## Report Preview")
+    date_str = report_date.strftime("%d %B")
 
-    components.iframe(html_url, height=600, scrolling=True)
-
-    # -----------------------------
-    # CAPTION BLOCK
-    # -----------------------------
-    today_str = datetime.now().strftime("%d %B")
-
-    caption = f"""
-Fleet Status - Porter - {today_str}
-
-Primary: Completion at 65-70% range
-Impact: Missed notifications impacting conversions
+    caption = f"""Porter Revenue Report- {date_str}
 
 Full Report:
 {html_url}

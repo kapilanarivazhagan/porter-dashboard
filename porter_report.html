@@ -502,8 +502,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
 
-    const cityData = {"bangalore": {"earnings": "₹272,228", "orders": 506, "completion": 68, "drivers": 117, "missed": 216, "avg_earnings": "₹2,326", "avg_orders": 4, "earnings_change": 1.5, "avg_earnings_change": 1.5, "completion_change": -4.9, "orders_change": 1.4, "orders_change_abs": 7, "avg_orders_change": 0.0, "drivers_change": 0.0, "missed_change": 1.4}, "chennai": {"earnings": "₹143,733", "orders": 322, "completion": 70, "drivers": 61, "missed": 121, "avg_earnings": "₹2,356", "avg_orders": 5, "earnings_change": 10.2, "avg_earnings_change": 4.7, "completion_change": 8.3, "orders_change": 9.5, "orders_change_abs": 28, "avg_orders_change": 0.0, "drivers_change": 5.2, "missed_change": -41.3}, "hyderabad": {"earnings": "₹93,066", "orders": 225, "completion": 73, "drivers": 52, "missed": 61, "avg_earnings": "₹1,789", "avg_orders": 4, "earnings_change": 23.2, "avg_earnings_change": 27.9, "completion_change": -3.7, "orders_change": 27.1, "orders_change_abs": 48, "avg_orders_change": 33.3, "drivers_change": -3.7, "missed_change": 90.6}};
-    const chartData = {"cityEarningsTrend": {"labels": ["Apr 13 (Mon)", "Apr 14 (Tue)", "Apr 15 (Wed)", "Apr 16 (Thu)", "Apr 17 (Fri)", "Apr 18 (Sat)"], "datasets": [{"label": "All Cities", "data": [483515, 426889, 469186, 486340, 474220, 509027]}, {"label": "bangalore", "data": [278298, 275009, 249708, 282811, 268201, 272228]}, {"label": "chennai", "data": [121693, 73172, 136370, 120349, 130487, 143733]}, {"label": "hyderabad", "data": [83524, 78708, 83108, 83180, 75532, 93066]}]}, "city_driver_earnings": [{"City": "bangalore", "Earnings": 272228.0, "Drivers Reported": 117}, {"City": "chennai", "Earnings": 143733.0, "Drivers Reported": 61}, {"City": "hyderabad", "Earnings": 93066.0, "Drivers Reported": 52}]};
+    const cityData = {"bangalore": {"earnings": "₹271,431", "orders": 493, "completion": 65, "drivers": 117, "missed": 282, "avg_earnings": "₹2,319", "avg_orders": 4, "earnings_change": -0.3, "avg_earnings_change": -2.0, "completion_change": -5.0, "orders_change": -2.6, "orders_change_abs": -13, "avg_orders_change": 0.0, "drivers_change": 0.0, "missed_change": 30.6}, "chennai": {"earnings": "₹132,636", "orders": 275, "completion": 59, "drivers": 55, "missed": 195, "avg_earnings": "₹2,411", "avg_orders": 5, "earnings_change": -7.7, "avg_earnings_change": 2.4, "completion_change": -16.6, "orders_change": -14.6, "orders_change_abs": -47, "avg_orders_change": 0.0, "drivers_change": -9.8, "missed_change": 61.2}, "hyderabad": {"earnings": "₹88,052", "orders": 202, "completion": 66, "drivers": 54, "missed": 84, "avg_earnings": "₹1,630", "avg_orders": 3, "earnings_change": -5.4, "avg_earnings_change": -8.9, "completion_change": -9.5, "orders_change": -10.2, "orders_change_abs": -23, "avg_orders_change": 0.0, "drivers_change": 3.8, "missed_change": 37.7}};
+    const chartData = {"cityEarningsTrend": {"labels": ["Apr 14 (Tue)", "Apr 15 (Wed)", "Apr 16 (Thu)", "Apr 17 (Fri)", "Apr 18 (Sat)", "Apr 20 (Mon)"], "datasets": [{"label": "All Cities", "data": [426889, 469186, 486340, 474220, 509027, 492119]}, {"label": "bangalore", "data": [275009, 249708, 282811, 268201, 272228, 271431]}, {"label": "chennai", "data": [73172, 136370, 120349, 130487, 143733, 132636]}, {"label": "hyderabad", "data": [78708, 83108, 83180, 75532, 93066, 88052]}]}, "city_driver_earnings": [{"City": "bangalore", "Earnings": 271431.0, "Drivers Reported": 117}, {"City": "chennai", "Earnings": 132636.0, "Drivers Reported": 55}, {"City": "hyderabad", "Earnings": 88052.0, "Drivers Reported": 54}]};
     const chartColors = ["#4ade80", "#60a5fa", "#fbbf24", "#a78bfa", "#38bdf8", "#f87171", "#fb7185", "#34d399"];
     const chartConfig = {
         type: "line",
@@ -725,13 +725,13 @@
         const city = document.getElementById("cityFilter").value;
         const d = city === "all" ? null : cityData[city];
 
-        setKpi("earnings", city === "all" ? "₹509,027" : d.earnings, city === "all" ? 7.3 : d.earnings_change, "earnings");
-        setKpi("avg_earnings", city === "all" ? "₹2,213" : d.avg_earnings, city === "all" ? 6.9 : d.avg_earnings_change, "avg_earnings");
-        setKpi("completion", city === "all" ? "69%" : d.completion + "%", city === "all" ? -1.6 : d.completion_change, "completion");
-        setKpi("drivers", city === "all" ? "229" : d.drivers, city === "all" ? 0.0 : d.drivers_change, "drivers");
-        setKpi("orders", city === "all" ? "1053" : d.orders, city === "all" ? 8.6 : d.orders_change, "orders");
-        setKpi("avg_orders", city === "all" ? "5" : d.avg_orders, city === "all" ? 25.0 : d.avg_orders_change, "avg_orders");
-        setKpi("missed", city === "all" ? "398" : d.missed, city === "all" ? -11.8 : d.missed_change, "missed");
+        setKpi("earnings", city === "all" ? "₹492,119" : d.earnings, city === "all" ? -3.3 : d.earnings_change, "earnings");
+        setKpi("avg_earnings", city === "all" ? "₹2,158" : d.avg_earnings, city === "all" ? -2.5 : d.avg_earnings_change, "avg_earnings");
+        setKpi("completion", city === "all" ? "63%" : d.completion + "%", city === "all" ? -9.0 : d.completion_change, "completion");
+        setKpi("drivers", city === "all" ? "225" : d.drivers, city === "all" ? -1.7 : d.drivers_change, "drivers");
+        setKpi("orders", city === "all" ? "970" : d.orders, city === "all" ? -7.9 : d.orders_change, "orders");
+        setKpi("avg_orders", city === "all" ? "4" : d.avg_orders, city === "all" ? -20.0 : d.avg_orders_change, "avg_orders");
+        setKpi("missed", city === "all" ? "561" : d.missed, city === "all" ? 41.0 : d.missed_change, "missed");
         filterInsights(city);
     }
 
@@ -970,7 +970,7 @@
     <div class="app-shell">
 
         <div class="header">
-            &#128202; Porter Report - 18 April
+            &#128202; Porter Report - 20 April
         </div>
 
         <div class="filter">
@@ -990,44 +990,44 @@
                         <div class="kpi-stack">
                             <div class="kpi-card earnings">
                                 <span class="label">Earnings</span>
-                                <span class="value" id="earnings">₹509,027</span>
-                                <span class="change positive" id="earnings_change">&#8593; 7.3%</span>
+                                <span class="value" id="earnings">₹492,119</span>
+                                <span class="change negative" id="earnings_change">&#8595; 3.3%</span>
                             </div>
 
                             <div class="kpi-card avg">
                                 <span class="label">Avg Earnings</span>
-                                <span class="value" id="avg_earnings">₹2,213</span>
-                                <span class="change positive" id="avg_earnings_change">&#8593; 6.9%</span>
+                                <span class="value" id="avg_earnings">₹2,158</span>
+                                <span class="change negative" id="avg_earnings_change">&#8595; 2.5%</span>
                             </div>
 
                             <div class="kpi-card completion">
                                 <span class="label">Completion %</span>
-                                <span class="value" id="completion">69%</span>
-                                <span class="change negative" id="completion_change">&#8595; 1.6%</span>
+                                <span class="value" id="completion">63%</span>
+                                <span class="change negative" id="completion_change">&#8595; 9.0%</span>
                             </div>
 
                             <div class="kpi-card drivers">
                                 <span class="label">Drivers Reported</span>
-                                <span class="value" id="drivers">229</span>
-                                <span class="change neutral" id="drivers_change">0.0%</span>
+                                <span class="value" id="drivers">225</span>
+                                <span class="change negative" id="drivers_change">&#8595; 1.7%</span>
                             </div>
 
                             <div class="kpi-card orders">
                                 <span class="label">Orders</span>
-                                <span class="value" id="orders">1053</span>
-                                <span class="change positive" id="orders_change">&#8593; 8.6%</span>
+                                <span class="value" id="orders">970</span>
+                                <span class="change negative" id="orders_change">&#8595; 7.9%</span>
                             </div>
 
                             <div class="kpi-card avg">
                                 <span class="label">Avg Orders</span>
-                                <span class="value" id="avg_orders">5</span>
-                                <span class="change positive" id="avg_orders_change">&#8593; 25.0%</span>
+                                <span class="value" id="avg_orders">4</span>
+                                <span class="change negative" id="avg_orders_change">&#8595; 20.0%</span>
                             </div>
 
                             <div class="kpi-card missed">
                                 <span class="label">Missed Orders</span>
-                                <span class="value" id="missed">398</span>
-                                <span class="change positive" id="missed_change">&#8595; 11.8%</span>
+                                <span class="value" id="missed">561</span>
+                                <span class="change negative" id="missed_change">&#8593; 41.0%</span>
                             </div>
                         </div>
                     </div>
@@ -1043,25 +1043,25 @@
 
             <div class="insight-block">
                 <div class="insight-label">&#9888; Key Issue:</div>
-                <p>Strong demand growth is driving revenue increase across 3 cities</p>
+                <p>Low completion is limiting order conversion across 3 cities</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128202; What Changed:</div>
                 <div class="change-story">
-                    <p>Earnings ↑ increased by <strong>₹37,374</strong>, primarily driven by a rise in completed orders.</p>
-                    <p>Completion ↓ decreased by <strong>1.0%</strong>, indicating minor inefficiencies in fulfillment.</p>
-                    <p>Orders ↑ increased by <strong>83</strong>, directly contributing to higher earnings.</p>
+                    <p>Earnings ↓ declined by <strong>₹16,305</strong>, despite order activity.</p>
+                    <p>Completion ↓ decreased by <strong>8.9%</strong>, indicating minor inefficiencies in fulfillment.</p>
+                    <p>Orders ↓ dropped by <strong>83</strong>, putting pressure on revenue.</p>
                 </div>
                 <p class="trend-line">All Cities earnings are trending upward over the last 7 days.</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128640; Action Plan:</div>
-                <p>Capitalize on demand momentum by ensuring supply availability during peak hours. Protect high-demand routes to sustain current growth.</p>
+                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹19,685</strong> in earnings.</p>
             </div>
 
-            <div class="insight-block perf-summary"><p>Overall, The fleet overall is showing strong demand growth but is showing consistent fulfillment.</p></div>
+            <div class="insight-block perf-summary"><p>Overall, The fleet overall is showing declining revenue but requires efficiency improvements to maximize output.</p></div>
         </article>
         
         <article class="insight-card" data-city="bangalore">
@@ -1075,16 +1075,16 @@
             <div class="insight-block">
                 <div class="insight-label">&#128202; What Changed:</div>
                 <div class="change-story">
-                    <p>Earnings ↑ increased by <strong>₹4,023</strong>, primarily driven by a rise in completed orders.</p>
-                    <p>Completion ↓ decreased by <strong>4.9%</strong>, indicating minor inefficiencies in fulfillment.</p>
-                    <p>Orders ↑ increased by <strong>7</strong>, directly contributing to higher earnings.</p>
+                    <p>Earnings ↓ declined by <strong>₹817</strong>, despite order activity.</p>
+                    <p>Completion ↓ decreased by <strong>5.0%</strong>, indicating minor inefficiencies in fulfillment.</p>
+                    <p>Orders ↓ dropped by <strong>13</strong>, putting pressure on revenue.</p>
                 </div>
                 <p class="trend-line">Bangalore earnings are trending downward over the last 7 days.</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128640; Action Plan:</div>
-                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹10,889</strong> in earnings.</p>
+                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹10,857</strong> in earnings.</p>
             </div>
 
             <div class="insight-block perf-summary"><p>Overall, Bangalore is showing stable revenue but requires efficiency improvements to maximize output.</p></div>
@@ -1095,25 +1095,25 @@
 
             <div class="insight-block">
                 <div class="insight-label">&#9888; Key Issue:</div>
-                <p>Strong demand growth is driving revenue increase</p>
+                <p>Low completion is limiting order conversion</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128202; What Changed:</div>
                 <div class="change-story">
-                    <p>Earnings ↑ increased by <strong>₹13,304</strong>, primarily driven by a rise in completed orders.</p>
-                    <p>Completion ↑ increased by <strong>8.3%</strong>, reflecting improved driver efficiency.</p>
-                    <p>Orders ↑ increased by <strong>28</strong>, directly contributing to higher earnings.</p>
+                    <p>Earnings ↓ declined by <strong>₹11,065</strong>, despite order activity.</p>
+                    <p>Completion ↓ decreased by <strong>16.6%</strong>, indicating minor inefficiencies in fulfillment.</p>
+                    <p>Orders ↓ dropped by <strong>47</strong>, putting pressure on revenue.</p>
                 </div>
                 <p class="trend-line">Chennai earnings are trending upward over the last 7 days.</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128640; Action Plan:</div>
-                <p>Capitalize on demand momentum by ensuring supply availability during peak hours. Protect high-demand routes to sustain current growth.</p>
+                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹10,000</strong> in earnings.</p>
             </div>
 
-            <div class="insight-block perf-summary"><p>Overall, Chennai is showing strong demand growth but is showing consistent fulfillment.</p></div>
+            <div class="insight-block perf-summary"><p>Overall, Chennai is showing declining revenue but requires efficiency improvements to maximize output.</p></div>
         </article>
         
         <article class="insight-card" data-city="hyderabad">
@@ -1127,19 +1127,19 @@
             <div class="insight-block">
                 <div class="insight-label">&#128202; What Changed:</div>
                 <div class="change-story">
-                    <p>Earnings ↑ increased by <strong>₹17,525</strong>, primarily driven by a rise in completed orders.</p>
-                    <p>Completion ↓ decreased by <strong>3.7%</strong>, indicating minor inefficiencies in fulfillment.</p>
-                    <p>Orders ↑ increased by <strong>48</strong>, directly contributing to higher earnings.</p>
+                    <p>Earnings ↓ declined by <strong>₹5,026</strong>, despite order activity.</p>
+                    <p>Completion ↓ decreased by <strong>9.5%</strong>, indicating minor inefficiencies in fulfillment.</p>
+                    <p>Orders ↓ dropped by <strong>23</strong>, putting pressure on revenue.</p>
                 </div>
                 <p class="trend-line">Hyderabad earnings are trending upward over the last 7 days.</p>
             </div>
 
             <div class="insight-block">
                 <div class="insight-label">&#128640; Action Plan:</div>
-                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹11,392</strong> in earnings.</p>
+                <p>Improve driver acceptance and reduce missed notifications to increase completion by ~2–3%. This can recover ~<strong>₹10,000</strong> in earnings.</p>
             </div>
 
-            <div class="insight-block perf-summary"><p>Overall, Hyderabad is showing strong demand growth but requires efficiency improvements to maximize output.</p></div>
+            <div class="insight-block perf-summary"><p>Overall, Hyderabad is showing declining revenue but requires efficiency improvements to maximize output.</p></div>
         </article>
         
                     </div>

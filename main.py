@@ -130,9 +130,14 @@ def run_for_date(date):
 # MAIN FLOW
 # ===============================
 
+import sys
+
 if __name__ == "__main__":
 
-    if MODE == "manual":
+    if len(sys.argv) > 2 and sys.argv[1] == "--date":
+        run_for_date(sys.argv[2])
+
+    elif MODE == "manual":
 
         for date in MANUAL_DATES:
             run_for_date(date)
