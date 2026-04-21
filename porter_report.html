@@ -502,7 +502,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script>
 
-    const cityData = {"bangalore": {"earnings": "₹271,431", "orders": 493, "completion": 65, "drivers": 117, "missed": 282, "avg_earnings": "₹2,319", "avg_orders": 4, "earnings_change": -0.3, "avg_earnings_change": -2.0, "completion_change": -5.0, "orders_change": -2.6, "orders_change_abs": -13, "avg_orders_change": 0.0, "drivers_change": 0.0, "missed_change": 30.6}, "chennai": {"earnings": "₹132,636", "orders": 275, "completion": 59, "drivers": 55, "missed": 195, "avg_earnings": "₹2,411", "avg_orders": 5, "earnings_change": -7.7, "avg_earnings_change": 2.4, "completion_change": -16.6, "orders_change": -14.6, "orders_change_abs": -47, "avg_orders_change": 0.0, "drivers_change": -9.8, "missed_change": 61.2}, "hyderabad": {"earnings": "₹88,052", "orders": 202, "completion": 66, "drivers": 54, "missed": 84, "avg_earnings": "₹1,630", "avg_orders": 3, "earnings_change": -5.4, "avg_earnings_change": -8.9, "completion_change": -9.5, "orders_change": -10.2, "orders_change_abs": -23, "avg_orders_change": 0.0, "drivers_change": 3.8, "missed_change": 37.7}};
+    const cityData = {"bangalore": {"earnings": "₹271,431", "orders": 493, "completion": 65, "drivers": 119, "missed": 282, "avg_earnings": "₹2,280", "avg_orders": 4, "earnings_change": -0.3, "avg_earnings_change": -2.0, "completion_change": -5.0, "orders_change": -2.6, "orders_change_abs": -13, "avg_orders_change": 0.0, "drivers_change": 1.7, "missed_change": 30.6}, "chennai": {"earnings": "₹132,636", "orders": 275, "completion": 59, "drivers": 55, "missed": 195, "avg_earnings": "₹2,411", "avg_orders": 5, "earnings_change": -7.7, "avg_earnings_change": 2.4, "completion_change": -16.6, "orders_change": -14.6, "orders_change_abs": -47, "avg_orders_change": 0.0, "drivers_change": -9.8, "missed_change": 61.2}, "hyderabad": {"earnings": "₹88,052", "orders": 202, "completion": 66, "drivers": 54, "missed": 84, "avg_earnings": "₹1,630", "avg_orders": 3, "earnings_change": -5.4, "avg_earnings_change": -8.9, "completion_change": -9.5, "orders_change": -10.2, "orders_change_abs": -23, "avg_orders_change": 0.0, "drivers_change": 3.8, "missed_change": 37.7}};
     const chartData = {"cityEarningsTrend": {"labels": ["Apr 14 (Tue)", "Apr 15 (Wed)", "Apr 16 (Thu)", "Apr 17 (Fri)", "Apr 18 (Sat)", "Apr 20 (Mon)"], "datasets": [{"label": "All Cities", "data": [426889, 469186, 486340, 474220, 509027, 492119]}, {"label": "bangalore", "data": [275009, 249708, 282811, 268201, 272228, 271431]}, {"label": "chennai", "data": [73172, 136370, 120349, 130487, 143733, 132636]}, {"label": "hyderabad", "data": [78708, 83108, 83180, 75532, 93066, 88052]}]}, "city_driver_earnings": [{"City": "bangalore", "Earnings": 271431.0, "Drivers Reported": 117}, {"City": "chennai", "Earnings": 132636.0, "Drivers Reported": 55}, {"City": "hyderabad", "Earnings": 88052.0, "Drivers Reported": 54}]};
     const chartColors = ["#4ade80", "#60a5fa", "#fbbf24", "#a78bfa", "#38bdf8", "#f87171", "#fb7185", "#34d399"];
     const chartConfig = {
@@ -728,7 +728,7 @@
         setKpi("earnings", city === "all" ? "₹492,119" : d.earnings, city === "all" ? -3.3 : d.earnings_change, "earnings");
         setKpi("avg_earnings", city === "all" ? "₹2,158" : d.avg_earnings, city === "all" ? -2.5 : d.avg_earnings_change, "avg_earnings");
         setKpi("completion", city === "all" ? "63%" : d.completion + "%", city === "all" ? -9.0 : d.completion_change, "completion");
-        setKpi("drivers", city === "all" ? "225" : d.drivers, city === "all" ? -1.7 : d.drivers_change, "drivers");
+        setKpi("drivers", city === "all" ? "228" : d.drivers, city === "all" ? -0.9 : d.drivers_change, "drivers");
         setKpi("orders", city === "all" ? "970" : d.orders, city === "all" ? -7.9 : d.orders_change, "orders");
         setKpi("avg_orders", city === "all" ? "4" : d.avg_orders, city === "all" ? -20.0 : d.avg_orders_change, "avg_orders");
         setKpi("missed", city === "all" ? "561" : d.missed, city === "all" ? 41.0 : d.missed_change, "missed");
@@ -1008,8 +1008,8 @@
 
                             <div class="kpi-card drivers">
                                 <span class="label">Drivers Reported</span>
-                                <span class="value" id="drivers">225</span>
-                                <span class="change negative" id="drivers_change">&#8595; 1.7%</span>
+                                <span class="value" id="drivers">228</span>
+                                <span class="change negative" id="drivers_change">&#8595; 0.9%</span>
                             </div>
 
                             <div class="kpi-card orders">

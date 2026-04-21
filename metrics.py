@@ -57,7 +57,7 @@ def calculate_kpis(df):
     # DRIVERS
     # -----------------------------
     if "Driver Name" in df.columns:
-        drivers = df["Driver Name"].nunique()
+        drivers = len(df)
     else:
         drivers = 0
 
@@ -116,13 +116,13 @@ def city_metrics(df):
         "missed_notifs_overall": "sum"
     }
 
-    if "Driver Name" in df.columns:
-        agg_dict["Driver Name"] = pd.Series.nunique
-
     city_df = df.groupby("City").agg(agg_dict).reset_index()
 
-    if "Driver Name" in city_df.columns:
-        city_df.rename(columns={"Driver Name": "Drivers Reported"}, inplace=True)
+    # ✅ Count rows = drivers (since already unique)
+    driver_counts = df.groupby("City").size().reset_index(name="Drivers Reported")
+
+    # merge into city_df
+    city_df = city_df.merge(driver_counts, on="City", how="left")
 
     return city_df
 
